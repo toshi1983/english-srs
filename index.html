@@ -454,7 +454,6 @@ function loadEmbedded(){
   }catch(e){return null;}
 }
 async function autoload(){
-  if(Array.isArray(cards)&&cards.length){renderDashboard();return;}
   // 1) embedded data (works on file:// without any import)
   let list=loadEmbedded();
   // 2) fallback: fetch external data/cards.json (works on a server)
@@ -465,8 +464,22 @@ async function autoload(){
     }catch(e){/* file:// では fetch 不可 */}
   }
   if(list&&list.length){
-    list.forEach(c=>{if(!c.srs)c.srs={easeFactor:2.5,interval:0,repetitions:0,dueDate:today()};});
-    cards=list; save(LS_CARDS,cards);
+    if(Array.isArray(cards)&&cards.length){
+      // 既存デッキがある場合: 新しいカードだけをマージ（既存のSRS進捗は保持）
+      const byFront=new Map(cards.map(c=>[String(c.front).toLowerCase(),c]));
+      let added=0;
+      list.forEach(c=>{
+        const k=String(c.front||"").toLowerCase();
+        if(!k||byFront.has(k)) return;
+        if(!c.srs)c.srs={easeFactor:2.5,interval:0,repetitions:0,dueDate:today()};
+        cards.push(c); byFront.set(k,c); added++;
+      });
+      if(added>0) save(LS_CARDS,cards);
+    }else{
+      // 初回: 埋め込みデータをそのまま採用
+      list.forEach(c=>{if(!c.srs)c.srs={easeFactor:2.5,interval:0,repetitions:0,dueDate:today()};});
+      cards=list; save(LS_CARDS,cards);
+    }
   }
   renderDashboard();
 }
