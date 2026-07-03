@@ -1,5 +1,5 @@
 // English SRS Service Worker — offline cache
-const CACHE = "english-srs-v1";
+const CACHE = "english-srs-v2";
 const ASSETS = [
   "./",
   "./index.html",
