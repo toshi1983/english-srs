@@ -1,5 +1,5 @@
 // English SRS Service Worker — network-first for HTML, cache-first for assets
-const CACHE = "english-srs-v4";
+const CACHE = "english-srs-v5";
 const ASSETS = ["./","./index.html","./manifest.json","./icon-192.png","./icon-512.png"];
 
 self.addEventListener("install", (e) => {
